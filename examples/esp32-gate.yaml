@@ -1,0 +1,168 @@
+# Esempio completo per ESP32 esp32dev, Roger EDGE1 e Home Assistant.
+# Crea secrets.yaml accanto a questo file a partire da secrets.example.yaml.
+# Verifica i GPIO e l'interfaccia elettrica della tua installazione.
+substitutions:
+  name: roger-edge1
+  friendly_name: Centralina Cancello
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2026.9.0
+  comment: "Centralina Roger Technology EDGE1 via UART"
+
+esp32:
+  board: esp32dev
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+  # Disabilita i log sulla UART hardware; i log rimangono disponibili via API.
+  baud_rate: 0
+  level: INFO
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# Per seguire gli aggiornamenti del repository.
+# Per bloccare una versione sostituisci main con un tag effettivamente pubblicato.
+external_components:
+  - source: github://branda92/esphome-roger-edge1@main
+    components: [roger_edge1]
+    refresh: 1d
+
+uart:
+  id: uart_roger
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+  data_bits: 8
+  parity: NONE
+  stop_bits: 1
+
+# Il componente richiede questa UART in esclusiva.
+# Non aggiungere modbus/modbus_controller sulla stessa UART.
+roger_edge1:
+  id: edge1
+  uart_id: uart_roger
+  address: 0x0A
+  update_interval: 500ms
+  response_timeout: 200ms
+  offline_timeout: 3s
+  parameter_update_interval: 30s
+  inputs_update_interval: 500ms
+  inputs_timeout: 3s
+
+cover:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Cancello"
+    id: cancello
+
+button:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Apri"
+    id: cancello_apri
+    icon: "mdi:gate-open"
+    command: OPEN
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Stop"
+    id: cancello_stop
+    icon: "mdi:stop"
+    command: STOP
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Chiudi"
+    id: cancello_chiudi
+    icon: "mdi:gate"
+    command: CLOSE
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Pedonale"
+    id: cancello_pedonale
+    icon: "mdi:walk"
+    command: PEDESTRIAN
+
+sensor:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    raw_state:
+      name: "EDGE1 Stato Grezzo"
+      id: edge1_state_raw
+    position_1_raw:
+      name: "Posizione Anta 1 Raw"
+      id: posizione_anta_1_raw
+    position_2_raw:
+      name: "Posizione Anta 2 Raw"
+      id: posizione_anta_2_raw
+    position_1:
+      name: "Posizione Anta 1"
+      id: posizione_anta_1
+    position_2:
+      name: "Posizione Anta 2"
+      id: posizione_anta_2
+    position:
+      name: "Posizione Cancello"
+    state_1:
+      name: "Codice Stato Anta 1"
+    state_2:
+      name: "Codice Stato Anta 2"
+    communication_errors:
+      name: "EDGE1 Errori Comunicazione"
+    crc_errors:
+      name: "EDGE1 Errori CRC"
+    inputs_raw:
+      name: "EDGE1 Ingressi Raw 0x1711"
+    input_aux_raw:
+      name: "EDGE1 Registro Raw 0x1712"
+      disabled_by_default: true
+
+text_sensor:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    state_1:
+      name: "Stato Anta 1"
+      id: stato_anta_1
+    state_2:
+      name: "Stato Anta 2"
+      id: stato_anta_2
+    last_result:
+      name: "EDGE1 Ultimo Esito Comando"
+
+binary_sensor:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    online:
+      name: "EDGE1 Collegata"
+      id: edge1_online
+    ft1:
+      name: "FT1 Oscurata"
+      id: ft1_oscurata
+    ft2:
+      name: "FT2 Oscurata"
+      id: ft2_oscurata
+
+select:
+  - platform: roger_edge1
+    roger_edge1_id: edge1
+    name: "Parametro 80"
+    id: parametro_80
+    parameter: 80
+  # Lettura e scrittura verificate nelle acquisizioni; controllo opzionale.
+  # - platform: roger_edge1
+  #   roger_edge1_id: edge1
+  #   name: "Parametro 38"
+  #   id: parametro_38
+  #   parameter: 38

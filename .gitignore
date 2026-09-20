@@ -1,0 +1,13 @@
+.DS_Store
+.esphome/
+.venv/
+__pycache__/
+*.pyc
+secrets.yaml
+secrets.*.yaml
+!secrets.example.yaml
+*.bin
+*.elf
+*.zip
+*.sr
+build/
