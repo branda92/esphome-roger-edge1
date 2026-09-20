@@ -2,9 +2,9 @@
 
 Componente esterno ESPHome per integrare una centralina **Roger Technology EDGE1** in Home Assistant attraverso la porta UART EXP.
 
-Gestisce apertura, chiusura, stop, apertura pedonale, stato e posizione delle due ante, fotocellule FT1/FT2 e lettura/scrittura dei parametri 38 e 80.
+Gestisce apertura, chiusura, stop, apertura pedonale, stato e posizione delle due ante e fotocellule FT1/FT2.
 
-**Versione del componente: 0.3.0.** Compilazione verificata con **ESPHome 2026.9.0**, **ESP32 esp32dev, 4 MB**, framework **ESP-IDF**. Il funzionamento sulla centralina dell'autore è stato confermato; le verifiche documentate delle fotocellule mostrano FT1 e FT2 separatamente. Il caso simultaneo `0x0030` è coperto dai test software e resta da confermare con una prova fisica documentata.
+**Versione del componente: 0.3.0.** Compilazione verificata con **ESPHome 2026.9.0**, **ESP32 esp32dev, 4 MB**, framework **ESP-IDF**. Il funzionamento sulla centralina dell'autore è stato confermato; le verifiche documentate delle fotocellule mostrano FT1 e FT2 separatamente.
 
 Questo è un progetto indipendente, non un componente ufficiale Roger Technology o ESPHome. Il protocollo implementato deriva dalle acquisizioni UART dell'impianto utilizzato per lo sviluppo: non è stata verificata la compatibilità con tutte le centraline o revisioni firmware.
 
